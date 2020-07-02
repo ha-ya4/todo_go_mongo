@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
+        <title>mongo-todo</title>
+    </head>
+    <body>
+        <div class="main">
+            <h1 class="title">mongo todo</h1>
+            {{ if eq .ID 0 }}
+                <p>todoがないよ</p>
+            {{ else }}
+                {{ .ID }}
+                {{ .Title }}
+                {{ .Comment }}
+            {{ end }}
+        </div>
+    </body>
+</html>
