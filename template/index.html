@@ -2,18 +2,28 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" type="text/css" href="../css/style.css">
+        <link rel="stylesheet" type="text/css" href="../resources/style.css">
+        <script type="text/javascript" src="../resources/index.js"></script>
         <title>mongo-todo</title>
     </head>
     <body>
         <div class="main">
             <h1 class="title">mongo todo</h1>
-            {{ if eq .ID 0 }}
+
+            <form id="post-todo-form" class="post-form" method="POST">
+                <input class="form-parts" type="text" mame="title"/>
+                <textarea class="form-parts" mame="comment"></textarea>
+                <button class="post-submit" type="button" onClick="createTodo()"/>登録</button>
+            </form>
+            <hr>
+            {{ $length := len .Todo }}
+            {{ if eq $length 0 }}
                 <p>todoがないよ</p>
             {{ else }}
-                {{ .ID }}
-                {{ .Title }}
-                {{ .Comment }}
+                {{ range $i, $t := .Todo }}
+                    <div class="todo-item">{{ $t.Title }}</div>
+                    <div class="todo-item">{{ $t.Comment }}</div>
+                {{ end }}
             {{ end }}
         </div>
     </body>
