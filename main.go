@@ -85,8 +85,11 @@ func (t Todo) update() error {
 	return nil
 }
 
-func (t Todo) delete() error {
-	return nil
+func (t Todo) delete(col *mongo.Collection) (*mongo.DeleteResult, error) {
+	d := bson.D{
+		bson.E{Key: "id", Value: t.ID},
+	}
+	return col.DeleteOne(context.Background(), d)
 }
 
 func handle(w http.ResponseWriter, r *http.Request) {
@@ -157,25 +160,7 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
 	if _, err = todo.insert(db.getCol(colName)); err != nil {
 		return
 	}
-
-	todoSlice, err := getTodoAll(db.getCol(colName))
-	if err != nil {
-		return
-	}
-	st := struct {
-		Todo []Todo
-	}{
-		Todo: todoSlice,
-	}
-
-	t, err := template.ParseFiles("template/index.html")
-	if err != nil {
-		return
-	}
-
-	if e := t.Execute(w, st); err != nil {
-		log.Println(e)
-	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func handlePut(w http.ResponseWriter, r *http.Request) {
@@ -206,14 +191,14 @@ func handleDelete(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	t, err := template.ParseFiles("template/index.html")
-	if err != nil {
+	id := r.FormValue("id")
+	todo := &Todo{ID: id}
+	result, err := todo.delete(db.getCol(colName))
+	if err != nil || result.DeletedCount == 0 {
 		return
 	}
 
-	if e := t.Execute(w, nil); err != nil {
-		log.Println(e)
-	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func main() {

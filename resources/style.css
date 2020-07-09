@@ -17,11 +17,20 @@
     margin-top: 1px;
 }
 
-.post-submit {
+.button {
     display: block;
     margin: 0 0 0 auto;
 }
 
-.todo-item {
-    border: 1px solid black;
+.todo-container {
+    border: 2px solid black;
+    margin-top: 3px;
+}
+
+.todo {
+    margin: 5px;
+}
+
+.todohr {
+    margin: -0.5px 0px;
 }
