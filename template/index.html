@@ -13,7 +13,7 @@
             <form id="post-todo-form" class="post-form" method="POST">
                 <input class="form-parts" type="text" mame="title" placeholder="title"/>
                 <textarea class="form-parts" mame="comment" placeholder="comment"></textarea>
-                <button class="button" type="button" onClick="createTodo()"/>登録</button>
+                <button type="button" onClick="createTodo()"/>登録</button>
             </form>
             <hr />
             {{ $length := len .Todo }}
@@ -21,13 +21,15 @@
                 <p>todoがないよ</p>
             {{ else }}
                 {{ range $i, $t := .Todo }}
-                    <input id="todo-id-holder+{{$i}}" type="hidden"/>
-                    <div class="todo-container">
-                        <div class="todo">{{ $t.Title }}</div>
+
+                    <div class="todo-container{{$i}}">
+                        <input class="update-form" value="{{ $t.Title }}"></input>
                         <hr class="todohr"/>
-                        <div class="todo">{{ $t.Comment }}</div>
+                        <textarea class="update-form">{{ $t.Comment }}</textarea>
                     </div>
-                    <button class="button" type="button" onClick="deleteTodo({{$t}})"/>削除</button>
+                    <button type="button" onClick="updateTodo({{$i}}, {{$t}})"/>変更</button>
+                    <button type="button" onClick="deleteTodo({{$t}})"/>削除</button>
+
                 {{ end }}
             {{ end }}
         </div>

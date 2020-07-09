@@ -13,6 +13,21 @@ function createTodo() {
     });
 }
 
+function updateTodo(index, todo) {
+    const el = document.querySelector(".todo-container"+index).children;
+    const t = {
+        id: todo.id,
+        title: el[0].value,
+        comment: el[2].value
+    };
+    httpPut("http://localhost:8080", t).then(res => {
+        alert("変更しました");
+        location.reload(true);
+    }).catch(err => {
+        alert(err);
+    });
+}
+
 function deleteTodo(todo) {
     const params = new URLSearchParams();
     params.set("id", todo.id);
@@ -28,6 +43,16 @@ function deleteTodo(todo) {
 function httpPost(url, data) {
     return fetch(url, {
         method: "POST",
+        headers:{
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+}
+
+function httpPut(url, data) {
+    return fetch(url, {
+        method: "PUT",
         headers:{
             "Content-Type": "application/json"
         },

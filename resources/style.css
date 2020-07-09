@@ -13,24 +13,20 @@
 
 .form-parts {
     display: block;
-    width: 100%;
+    width: 99.5%;
     margin-top: 1px;
-}
-
-.button {
-    display: block;
-    margin: 0 0 0 auto;
 }
 
 .todo-container {
     border: 2px solid black;
     margin-top: 3px;
-}
-
-.todo {
-    margin: 5px;
+    cursor: pointer;
 }
 
 .todohr {
     margin: -0.5px 0px;
+}
+
+.update-form {
+    width: 99%;
 }

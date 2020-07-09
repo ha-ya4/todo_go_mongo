@@ -81,15 +81,21 @@ func (t Todo) insert(col *mongo.Collection) (*mongo.InsertOneResult, error) {
 	return col.InsertOne(context.Background(), d)
 }
 
-func (t Todo) update() error {
-	return nil
+func (t Todo) update(col *mongo.Collection) (*mongo.UpdateResult, error) {
+	log.Println(t)
+	f := bson.D{{"id", t.ID}}
+	d := bson.D{{"$set", bson.D{
+		{"title", t.Title},
+		{"comment", t.Comment},
+	}}}
+	return col.UpdateOne(context.Background(), f, d)
 }
 
 func (t Todo) delete(col *mongo.Collection) (*mongo.DeleteResult, error) {
-	d := bson.D{
+	f := bson.D{
 		bson.E{Key: "id", Value: t.ID},
 	}
-	return col.DeleteOne(context.Background(), d)
+	return col.DeleteOne(context.Background(), f)
 }
 
 func handle(w http.ResponseWriter, r *http.Request) {
@@ -147,8 +153,8 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	todo := &Todo{}
-	if err = json.Unmarshal(b, todo); err != nil {
+	todo := Todo{}
+	if err = json.Unmarshal(b, &todo); err != nil {
 		return
 	}
 	if id, err := uuid.NewRandom(); err != nil {
@@ -172,14 +178,20 @@ func handlePut(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	t, err := template.ParseFiles("template/index.html")
+	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return
 	}
-
-	if e := t.Execute(w, nil); err != nil {
-		log.Println(e)
+	todo := Todo{}
+	if err = json.Unmarshal(b, &todo); err != nil {
+		return
 	}
+	result, err := todo.update(db.getCol(colName))
+	if err != nil || result.UpsertedCount == 0 {
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func handleDelete(w http.ResponseWriter, r *http.Request) {
@@ -192,7 +204,7 @@ func handleDelete(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	id := r.FormValue("id")
-	todo := &Todo{ID: id}
+	todo := Todo{ID: id}
 	result, err := todo.delete(db.getCol(colName))
 	if err != nil || result.DeletedCount == 0 {
 		return
